@@ -112,6 +112,13 @@ public class Plugin : BaseUnityPlugin
 
     private void OnGUI()
     {
+        // Only run this method to update the cursor visibility when the game is in focus.
+        // This prevents the cursor from being hidden globally / in other Unity games by accident.
+        if (!Application.isFocused)
+        {
+            return;
+        }
+
         var playerManager = Singleton<PlayerManager>.Instance;
         var playerController = playerManager.GetConnectedPlayer();
 
