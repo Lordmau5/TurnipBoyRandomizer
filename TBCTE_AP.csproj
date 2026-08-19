@@ -16,7 +16,7 @@
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
-        <OutputPath>C:\Program Files\Epic Games\TurnipBoyCommitsTaxEvad\BepInEx\plugins\$(AssemblyName)</OutputPath>
+        <OutputPath>bin\Debug\$(AssemblyName)</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
     </PropertyGroup>
