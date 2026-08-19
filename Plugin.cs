@@ -24,6 +24,9 @@ public class Plugin : BaseUnityPlugin
     // with the AP server. Patches that only produce logs will still run.
     public static bool EnableRandomization = true;
 
+    // Override the cursor to be able to click on the button in the top right
+    private static bool CursorOverride = false;
+
 
     // Maps in-game item ID (e.g., "active_watering") to its vanilla location name as defined in the
     // apworld (e.g, "Veggieville - Steal From Lemon").
@@ -130,7 +133,7 @@ public class Plugin : BaseUnityPlugin
         {
             // The player is still on the main menu
             // Hide the cursor
-            Cursor.visible = false;
+            Cursor.visible = false || CursorOverride;
 
             GUI.color = Color.black;
             GUI.Label(new Rect(16, 10, 300, 20), ModDisplayInfo);
@@ -139,7 +142,7 @@ public class Plugin : BaseUnityPlugin
         else if (ArchipelagoClient.Authenticated)
         {
             // Hide the cursor now that we're connected
-            Cursor.visible = false;
+            Cursor.visible = false || CursorOverride;
 
             GUI.Label(new Rect(16, 10, 300, 20), ModDisplayInfo);
             statusMessage = " Status: Connected";
@@ -183,6 +186,15 @@ public class Plugin : BaseUnityPlugin
         if (Event.current.Equals(Event.KeyboardEvent("#R")) && playerController)
         {
             playerController.Die();
+        }
+
+        if (Event.current.Equals(Event.KeyboardEvent("F7")))
+        {
+            CursorOverride = !CursorOverride;
+            if (CursorOverride)
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
         }
     }
 }
