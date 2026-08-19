@@ -188,7 +188,7 @@ public class Plugin : BaseUnityPlugin
             playerController.Die();
         }
 
-        if (Event.current.Equals(Event.KeyboardEvent("F7")))
+        if (Event.current.Equals(Event.KeyboardEvent("F1")))
         {
             CursorOverride = !CursorOverride;
             if (CursorOverride)
