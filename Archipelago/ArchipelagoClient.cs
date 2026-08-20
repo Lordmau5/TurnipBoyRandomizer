@@ -13,7 +13,7 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago;
 
 public class ArchipelagoClient
 {
-    public const string APVersion = "0.5.0";
+    public const string APVersion = "0.6.7";
     private const string Game = "TurnipBoy";
 
     public static bool Authenticated;
@@ -162,7 +162,7 @@ public class ArchipelagoClient
     private int GetItemCount(string itemName)
     {
         var count = 0;
-        foreach(ItemInfo item in session.Items.AllItemsReceived)
+        foreach (ItemInfo item in session.Items.AllItemsReceived)
         {
             if (item.ItemName == itemName)
             {
