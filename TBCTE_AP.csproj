@@ -37,6 +37,7 @@
         <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
         <PackageReference Include="BepInEx.Core" Version="5.4.21" />
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
         <PackageReference Include="Lib.Harmony" Version="2.3.3" />
         <PackageReference Include="UnityEngine.Modules" Version="2019.4.10" IncludeAssets="compile" />
     </ItemGroup>
@@ -46,7 +47,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="Assembly-CSharp">
+        <Reference Include="Assembly-CSharp" Publicize="true">
             <HintPath>lib\Assembly-CSharp.dll</HintPath>
         </Reference>
     </ItemGroup>
