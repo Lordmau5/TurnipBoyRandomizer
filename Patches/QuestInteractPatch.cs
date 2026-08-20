@@ -13,9 +13,11 @@ class QuestInteractPatch
         {
             // Make sure Tots doesn't take away the Soil Sword, potentially leaving the player
             // without a weapon.
-            var steps = new Traverse(__instance).Field("steps").GetValue<IList>();
-            var step = new Traverse(steps[0]);
-            step.Field("TakeItems").SetValue(false);
+            var steps = __instance.steps;
+            if (steps.Length > 0)
+            {
+                steps[0].TakeItems = false;
+            }
         }
 
         // Proceed normally
