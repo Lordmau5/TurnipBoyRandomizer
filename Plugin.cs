@@ -99,8 +99,7 @@ public class Plugin : BaseUnityPlugin
 
         ArchipelagoConsole.LogMessage($"{ModDisplayInfo} loaded!");
 
-        // TODO: Fix GUID
-        var harmony = new Harmony("foo.bar");
+        var harmony = new Harmony(PluginGUID);
         harmony.PatchAll();
     }
 
