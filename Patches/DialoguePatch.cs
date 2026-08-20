@@ -11,7 +11,7 @@ class DialoguePatch
     {
         if (Plugin.EnableRandomization)
         {
-            var dialogue = new Traverse(__instance).Field("dialogue").GetValue<Dialogue>();
+            var dialogue = __instance.dialogue;
             if (dialogue.RewardItemObject != null && dialogue.RewardItemObject.CanSpawn())
             {
                 var itemObject = dialogue.RewardItemObject;

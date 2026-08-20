@@ -11,10 +11,10 @@ class MailboxPatch
     {
         if (Plugin.EnableRandomization)
         {
-            var mail = new Traverse(__instance).Method("CheckForMail").GetValue();
+            var mail = __instance.CheckForMail();
             if (mail != null)
             {
-                ItemObject itemObject = new Traverse(mail).Field("ItemObject").GetValue<ItemObject>();
+                ItemObject itemObject = mail.ItemObject;
                 if (itemObject != null && itemObject.CanSpawn())
                 {
                     string itemId = itemObject.Index;
@@ -28,7 +28,7 @@ class MailboxPatch
                         // Set the item's "picked up" flag to true
                         itemObject.Pickup();
 
-                        new Traverse(__instance).Method("RefreshMailbox").GetValue();
+                        __instance.RefreshMailbox();
 
                         // Skip the default behavior
                         return false;

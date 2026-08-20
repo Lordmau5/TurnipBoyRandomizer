@@ -9,7 +9,7 @@ class PlantPatch
     {
         if (Plugin.EnableRandomization)
         {
-            var crop = new Traverse(__instance).Field("crop").GetValue<CropObject>();
+            var crop = __instance.crop;
             var itemObject = crop.DoNotSpawnIfHaveThisItemObject;
             if (itemObject && Plugin.ItemIdToLocation.ContainsKey(itemObject.Index))
             {

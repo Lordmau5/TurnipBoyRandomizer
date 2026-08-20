@@ -10,7 +10,7 @@ class MuralPatch
     {
         if (Plugin.EnableRandomization)
         {
-            var itemObject = new Traverse(__instance).Field("itemObject").GetValue<ItemObject>();
+            var itemObject = __instance.itemObject;
             if (itemObject.CanSpawn())
             {
                 string itemId = itemObject.Index;
@@ -21,7 +21,7 @@ class MuralPatch
                     ArchipelagoConsole.LogMessage("Reporting collection of " + Plugin.ItemIdToLocation[itemId]);
                     Plugin.ArchipelagoClient.CollectFrom(Plugin.ItemIdToLocation[itemId]);
 
-                    var interactionController = new Traverse(__instance).Field("interactionController").GetValue<InteractionController>();
+                    var interactionController = __instance.interactionController;
                     if (interactionController != null)
                     {
                         UnityEngine.Object.Destroy(interactionController.gameObject);

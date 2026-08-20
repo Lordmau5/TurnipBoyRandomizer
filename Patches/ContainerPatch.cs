@@ -10,7 +10,7 @@ class ContainerPatch
     {
         if (Plugin.EnableRandomization)
         {
-            var itemObject = new Traverse(__instance).Field("itemObject").GetValue<ItemObject>();
+            var itemObject = __instance.itemObject;
             if (itemObject != null && itemObject.CanSpawn())
             {
                 string itemId = itemObject.Index;
@@ -18,14 +18,13 @@ class ContainerPatch
                 if (Plugin.ItemIdToLocation.ContainsKey(itemId))
                 {
                     // Play the sound effect
-                    var openAudio = new Traverse(__instance).Field("openAudio").GetValue<FMODAudio>();
-                    openAudio.Play();
+                    __instance.openAudio.Play();
 
                     // Report the location as collected
                     ArchipelagoConsole.LogMessage("Reporting collection of " + Plugin.ItemIdToLocation[itemId]);
                     Plugin.ArchipelagoClient.CollectFrom(Plugin.ItemIdToLocation[itemId]);
 
-                    var interactionController = new Traverse(__instance).Field("interactionController").GetValue<InteractionController>();
+                    var interactionController = __instance.interactionController;
                     if (interactionController != null)
                     {
                         UnityEngine.Object.Destroy(interactionController.gameObject);

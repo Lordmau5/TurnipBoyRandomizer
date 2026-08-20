@@ -10,10 +10,9 @@ class FlammablePatch
     // Tie fire immunity to having the Hazmat Suit *item*, not having checked its *location*
     static void Postfix(FlammableController __instance, ref bool __result)
     {
-        var immuneItemObject =  new Traverse(__instance).Field("immuneItemObject").GetValue<ItemObject>();
-        if (immuneItemObject != null)
+        if (__instance.immuneItemObject != null)
         {
-            __result = Singleton<PlayerManager>.Instance.InventoryContainsItem(immuneItemObject);
+            __result = Singleton<PlayerManager>.Instance.InventoryContainsItem(__instance.immuneItemObject);
         }
     }
 }
