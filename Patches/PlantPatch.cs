@@ -1,5 +1,6 @@
-using BepInEx5ArchipelagoPluginTemplate.templates;
 using HarmonyLib;
+
+namespace TBCTE_AP.Patches;
 
 // Soil patches that normally grow a unique checked item don't check the inventory before spawning
 [HarmonyPatch(typeof(PlantController), "Grow")]

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
-using BepInEx5ArchipelagoPluginTemplate.templates.Archipelago;
+using TBCTE_AP.Archipelago;
 using UnityEngine;
 
-namespace BepInEx5ArchipelagoPluginTemplate.templates.Utils;
+namespace TBCTE_AP.Utils;
 
 // shamelessly stolen from oc2-modding https://github.com/toasterparty/oc2-modding/blob/main/OC2Modding/GameLog.cs
 public static class ArchipelagoConsole
@@ -64,7 +64,7 @@ public static class ArchipelagoConsole
             Hidden = !Hidden;
             UpdateWindow();
         }
-        
+
         // draw client/server commands entry
         if (Hidden || !ArchipelagoClient.Authenticated) return;
 

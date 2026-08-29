@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using BepInEx;
+using TBCTE_AP.Patches;
+using UnityEngine;
 
-namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago;
+namespace TBCTE_AP.Archipelago;
 
 public class DeathLinkHandler
 {
-    private static bool deathLinkEnabled;
-    private string slotName;
+    private bool deathLinkEnabled;
+    private readonly string slotName;
     private readonly DeathLinkService service;
     private readonly Queue<DeathLink> deathLinks = new();
 
@@ -59,6 +61,8 @@ public class DeathLinkHandler
         Plugin.BepinLogger.LogDebug(deathLink.Cause.IsNullOrWhiteSpace()
             ? $"Received Death Link from: {deathLink.Source}"
             : deathLink.Cause);
+
+        KillPlayer();
     }
 
     /// <summary>
@@ -74,8 +78,10 @@ public class DeathLinkHandler
             var deathLink = deathLinks.Dequeue();
             var cause = deathLink.Cause.IsNullOrWhiteSpace() ? GetDeathLinkCause(deathLink) : deathLink.Cause;
 
-            //TODO kill the player
             Plugin.BepinLogger.LogMessage(cause);
+
+            DeathLinkPatch.wasTriggeredByDeathLink = true;
+            PlayerManager.Instance.GetConnectedPlayer().TakeDamage("Explosion", 999, Vector2.zero, true);
         }
         catch (Exception e)
         {

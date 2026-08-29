@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using BepInEx5ArchipelagoPluginTemplate.templates;
-using BepInEx5ArchipelagoPluginTemplate.templates.Utils;
 using HarmonyLib;
+using TBCTE_AP.Utils;
+
+namespace TBCTE_AP.Patches;
 
 // Patches the method called when the player steps on a pickup
 [HarmonyPatch(typeof(PlayerController), nameof(PlayerController.OnTriggerStay2D))]

@@ -1,6 +1,6 @@
-using BepInEx5ArchipelagoPluginTemplate.templates;
-using BepInEx5ArchipelagoPluginTemplate.templates.Utils;
 using HarmonyLib;
+
+namespace TBCTE_AP.Patches;
 
 // Fix logic for item spawnability
 [HarmonyPatch(typeof(ItemObject), nameof(ItemObject.CanSpawn))]

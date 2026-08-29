@@ -1,5 +1,6 @@
-using BepInEx5ArchipelagoPluginTemplate.templates;
 using HarmonyLib;
+
+namespace TBCTE_AP.Patches;
 
 // Intercept a dialogue upon closing if it rewards an item
 [HarmonyPatch(typeof(PlayerManager), nameof(PlayerManager.GameBeat))]

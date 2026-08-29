@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Logging;
-using BepInEx5ArchipelagoPluginTemplate.templates.Archipelago;
-using BepInEx5ArchipelagoPluginTemplate.templates.Utils;
 using HarmonyLib;
+using TBCTE_AP.Archipelago;
+using TBCTE_AP.Utils;
 using UnityEngine;
 
-namespace BepInEx5ArchipelagoPluginTemplate.templates;
+namespace TBCTE_AP;
 
 [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
 public class Plugin : BaseUnityPlugin
 {
     public const string PluginGUID = "com.halftime.tbcte_ap";
     public const string PluginName = "Turnip Boy Commits Tax Evasion AP";
-    public const string PluginVersion = "0.1.3";
+    public const string PluginVersion = "0.1.4";
 
     public const string ModDisplayInfo = $"{PluginName} v{PluginVersion}";
     private const string APDisplayInfo = $"Archipelago v{ArchipelagoClient.APVersion}";
@@ -110,6 +110,22 @@ public class Plugin : BaseUnityPlugin
         ArchipelagoClient.ServerData.Uri = saveManager.GetData("ap_uri", "localhost");
         ArchipelagoClient.ServerData.SlotName = saveManager.GetData("ap_slot_name", "Player1");
         ArchipelagoClient.ServerData.Password = saveManager.GetData("ap_password", "");
+        ArchipelagoClient.ServerData.DeathLink = saveManager.GetData("ap_deathlink", false);
+    }
+
+    private readonly Vector2 referenceResolution = new(1920f, 1080f);
+    private readonly int connectionWindowID = 1001;
+    private Rect windowRect = new((1920f - 320f) / 2f, (1080f - 240f) / 2f, 320, 140);
+
+    private Matrix4x4 ScaleMatrix()
+    {
+        Matrix4x4 oldMatrix = GUI.matrix;
+
+        float scaleX = Screen.width / referenceResolution.x;
+        float scaleY = Screen.height / referenceResolution.y;
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(scaleX, scaleY, 1.0f));
+
+        return oldMatrix;
     }
 
     private void OnGUI()
@@ -126,6 +142,8 @@ public class Plugin : BaseUnityPlugin
 
         ArchipelagoConsole.OnGUI();
 
+        Matrix4x4 oldMatrix = ScaleMatrix();
+
         string statusMessage;
         // show the Archipelago Version and whether we're connected or not
         if (!playerController)
@@ -134,18 +152,24 @@ public class Plugin : BaseUnityPlugin
             // Hide the cursor
             Cursor.visible = false || CursorOverride;
 
-            GUI.color = Color.black;
-            GUI.Label(new Rect(16, 10, 300, 20), ModDisplayInfo);
-            GUI.Label(new Rect(16, 30, 300, 25), "Start or continue a game to connect.");
+            // Background box for Main Menu status
+            GUI.Box(new Rect(10, 5, 320, 45), "");
+
+            // Preserve default color, set to black, then restore afterwards
+            GUI.Label(new Rect(16, 7, 300, 20), ModDisplayInfo);
+            GUI.Label(new Rect(16, 27, 300, 25), "Start or continue a game to connect.");
         }
         else if (ArchipelagoClient.Authenticated)
         {
             // Hide the cursor now that we're connected
             Cursor.visible = false || CursorOverride;
 
-            GUI.Label(new Rect(16, 10, 300, 20), ModDisplayInfo);
+            // Background box for Connected status
+            GUI.Box(new Rect(10, 5, 320, 45), "");
+
+            GUI.Label(new Rect(16, 7, 300, 20), ModDisplayInfo);
             statusMessage = " Status: Connected";
-            GUI.Label(new Rect(16, 30, 300, 20), APDisplayInfo + statusMessage);
+            GUI.Label(new Rect(16, 27, 300, 20), APDisplayInfo + statusMessage);
         }
         else
         {
@@ -153,33 +177,17 @@ public class Plugin : BaseUnityPlugin
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
 
-            GUI.Label(new Rect(16, 10, 300, 20), ModDisplayInfo);
-            statusMessage = " Status: Disconnected";
-            GUI.Label(new Rect(16, 30, 300, 20), APDisplayInfo + statusMessage);
-            GUI.Label(new Rect(16, 120, 150, 20), "Host: ");
-            GUI.Label(new Rect(16, 140, 150, 20), "Player Name: ");
-            GUI.Label(new Rect(16, 160, 150, 20), "Password: ");
+            GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "");
 
-            ArchipelagoClient.ServerData.Uri = GUI.TextField(new Rect(150, 120, 150, 20),
-                ArchipelagoClient.ServerData.Uri);
-            ArchipelagoClient.ServerData.SlotName = GUI.TextField(new Rect(150, 140, 150, 20),
-                ArchipelagoClient.ServerData.SlotName);
-            ArchipelagoClient.ServerData.Password = GUI.TextField(new Rect(150, 160, 150, 20),
-                ArchipelagoClient.ServerData.Password);
+            // GUI.matrix = oldMatrix;
 
-            // requires that the player at least puts *something* in the slot name
-            if (GUI.Button(new Rect(16, 180, 100, 20), "Connect") &&
-                !ArchipelagoClient.ServerData.SlotName.IsNullOrWhiteSpace())
-            {
-                ArchipelagoClient.Connect();
+            windowRect.x = (referenceResolution.x - windowRect.width) / 2f;
+            windowRect.y = (referenceResolution.y - windowRect.height) / 2f;
 
-                // Save the connection info
-                var saveManager = Singleton<ReadWriteSaveManager>.Instance;
-                saveManager.SetData("ap_uri", ArchipelagoClient.ServerData.Uri);
-                saveManager.SetData("ap_slot_name", ArchipelagoClient.ServerData.SlotName);
-                saveManager.SetData("ap_password", ArchipelagoClient.ServerData.Password);
-            }
+            windowRect = GUI.ModalWindow(connectionWindowID, windowRect, DrawConnectionWindow, "Archipelago Connection");
         }
+
+        GUI.matrix = oldMatrix;
 
         // shift-R shortcut to die (to prevent potential softlocks)
         if (Event.current.Equals(Event.KeyboardEvent("#R")) && playerController)
@@ -195,5 +203,36 @@ public class Plugin : BaseUnityPlugin
                 Cursor.lockState = CursorLockMode.None;
             }
         }
+    }
+
+    private void DrawConnectionWindow(int windowID)
+    {
+        GUI.Label(new Rect(15, 20, 120, 20), "Host: ");
+        GUI.Label(new Rect(15, 40, 120, 20), "Player Name: ");
+        GUI.Label(new Rect(15, 60, 120, 20), "Password: ");
+
+        ArchipelagoClient.ServerData.Uri = GUI.TextField(new Rect(135, 20, 170, 20),
+            ArchipelagoClient.ServerData.Uri);
+        ArchipelagoClient.ServerData.SlotName = GUI.TextField(new Rect(135, 40, 170, 20),
+            ArchipelagoClient.ServerData.SlotName);
+        ArchipelagoClient.ServerData.Password = GUI.TextField(new Rect(135, 60, 170, 20),
+            ArchipelagoClient.ServerData.Password);
+
+        ArchipelagoClient.ServerData.DeathLink = GUI.Toggle(new Rect(15, 80, 150, 20),
+            ArchipelagoClient.ServerData.DeathLink, "Death Link");
+
+        if (GUI.Button(new Rect(15, 100, 100, 25), "Connect") &&
+            !ArchipelagoClient.ServerData.SlotName.IsNullOrWhiteSpace())
+        {
+            ArchipelagoClient.Connect();
+
+            var saveManager = Singleton<ReadWriteSaveManager>.Instance;
+            saveManager.SetData("ap_uri", ArchipelagoClient.ServerData.Uri);
+            saveManager.SetData("ap_slot_name", ArchipelagoClient.ServerData.SlotName);
+            saveManager.SetData("ap_password", ArchipelagoClient.ServerData.Password);
+            saveManager.SetData("ap_deathlink", ArchipelagoClient.ServerData.DeathLink);
+        }
+
+        GUI.DragWindow(new Rect(0, 0, 10000, 20));
     }
 }

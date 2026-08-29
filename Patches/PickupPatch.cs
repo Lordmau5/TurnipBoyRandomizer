@@ -1,5 +1,7 @@
-using BepInEx5ArchipelagoPluginTemplate.templates.Utils;
 using HarmonyLib;
+using TBCTE_AP.Utils;
+
+namespace TBCTE_AP.Patches;
 
 // Do some logging on item pickup
 [HarmonyPatch(typeof(PlayerController), nameof(PlayerController.PickupItem))]

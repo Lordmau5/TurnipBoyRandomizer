@@ -1,6 +1,7 @@
-using BepInEx5ArchipelagoPluginTemplate.templates;
-using BepInEx5ArchipelagoPluginTemplate.templates.Utils;
 using HarmonyLib;
+using TBCTE_AP.Utils;
+
+namespace TBCTE_AP.Patches;
 
 // Patches the method called when the player opens a container
 [HarmonyPatch(typeof(ContainerController), nameof(ContainerController.Open))]

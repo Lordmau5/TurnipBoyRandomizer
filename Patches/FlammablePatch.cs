@@ -1,7 +1,6 @@
-using System.Collections;
-using BepInEx5ArchipelagoPluginTemplate.templates;
-using BepInEx5ArchipelagoPluginTemplate.templates.Utils;
 using HarmonyLib;
+
+namespace TBCTE_AP.Patches;
 
 // Patcher for NPC quests
 [HarmonyPatch(typeof(FlammableController), nameof(FlammableController.IsImmune))]

@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago;
+namespace TBCTE_AP.Archipelago;
 
 public class ArchipelagoData
 {
     public string Uri;
     public string SlotName;
     public string Password;
+    public bool DeathLink;
     public int Index;
 
     public List<long> CheckedLocations;

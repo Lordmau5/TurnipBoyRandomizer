@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Linq;
-using BepInEx5ArchipelagoPluginTemplate.templates;
-using BepInEx5ArchipelagoPluginTemplate.templates.Utils;
 using HarmonyLib;
+using TBCTE_AP.Utils;
+
+namespace TBCTE_AP.Patches;
 
 // Patcher for NPC quests
 [HarmonyPatch(typeof(QuestNPCInteraction), nameof(QuestNPCInteraction.CheckIfStepIsComplete))]

@@ -1,7 +1,8 @@
-using BepInEx5ArchipelagoPluginTemplate.templates;
-using BepInEx5ArchipelagoPluginTemplate.templates.Utils;
 using HarmonyLib;
+using TBCTE_AP.Utils;
 using UnityEngine;
+
+namespace TBCTE_AP.Patches;
 
 // Intercept a dialogue upon closing if it rewards an item
 [HarmonyPatch(typeof(DialoguePopupController), nameof(DialoguePopupController.Nuke))]

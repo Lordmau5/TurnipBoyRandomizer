@@ -7,9 +7,9 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
-using BepInEx5ArchipelagoPluginTemplate.templates.Utils;
+using TBCTE_AP.Utils;
 
-namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago;
+namespace TBCTE_AP.Archipelago;
 
 public class ArchipelagoClient
 {
@@ -20,7 +20,7 @@ public class ArchipelagoClient
     private bool attemptingConnection;
 
     public static ArchipelagoData ServerData = new();
-    private DeathLinkHandler DeathLinkHandler;
+    public DeathLinkHandler DeathLinkHandler;
     private ArchipelagoSession session;
 
     /// <summary>
@@ -119,7 +119,7 @@ public class ArchipelagoClient
             ServerData.SetupSession(success.SlotData, session.RoomState.Seed);
             Authenticated = true;
 
-            DeathLinkHandler = new(session.CreateDeathLinkService(), ServerData.SlotName);
+            DeathLinkHandler = new(session.CreateDeathLinkService(), ServerData.SlotName, ServerData.DeathLink);
             session.Locations.CompleteLocationChecksAsync(ServerData.CheckedLocations.ToArray());
             outText = $"Successfully connected to {ServerData.Uri} as {ServerData.SlotName}!";
 
