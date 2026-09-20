@@ -159,32 +159,33 @@ public class Plugin : BaseUnityPlugin
             GUI.Label(new Rect(16, 7, 300, 20), ModDisplayInfo);
             GUI.Label(new Rect(16, 27, 300, 25), "Start or continue a game to connect.");
         }
-        else if (ArchipelagoClient.Authenticated)
-        {
-            // Hide the cursor now that we're connected
-            Cursor.visible = false || CursorOverride;
-
-            // Background box for Connected status
-            GUI.Box(new Rect(10, 5, 320, 45), "");
-
-            GUI.Label(new Rect(16, 7, 300, 20), ModDisplayInfo);
-            statusMessage = " Status: Connected";
-            GUI.Label(new Rect(16, 27, 300, 20), APDisplayInfo + statusMessage);
-        }
         else
         {
-            // Show and unlock the cursor until we're connected to the server
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            if (CursorOverride || !ArchipelagoClient.Authenticated)
+            {
+                // Show and unlock the cursor until we're connected to the server
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
 
-            GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "");
+                GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "");
 
-            // GUI.matrix = oldMatrix;
+                windowRect.x = (referenceResolution.x - windowRect.width) / 2f;
+                windowRect.y = (referenceResolution.y - windowRect.height) / 2f;
 
-            windowRect.x = (referenceResolution.x - windowRect.width) / 2f;
-            windowRect.y = (referenceResolution.y - windowRect.height) / 2f;
+                windowRect = GUI.ModalWindow(connectionWindowID, windowRect, DrawConnectionWindow, "Archipelago Connection");
+            }
+            else if (ArchipelagoClient.Authenticated)
+            {
+                // Hide the cursor now that we're connected
+                Cursor.visible = false || CursorOverride;
 
-            windowRect = GUI.ModalWindow(connectionWindowID, windowRect, DrawConnectionWindow, "Archipelago Connection");
+                // Background box for Connected status
+                GUI.Box(new Rect(10, 5, 320, 45), "");
+
+                GUI.Label(new Rect(16, 7, 300, 20), ModDisplayInfo);
+                statusMessage = " Status: Connected";
+                GUI.Label(new Rect(16, 27, 300, 20), APDisplayInfo + statusMessage);
+            }
         }
 
         GUI.matrix = oldMatrix;
@@ -198,10 +199,6 @@ public class Plugin : BaseUnityPlugin
         if (Event.current.Equals(Event.KeyboardEvent("F1")))
         {
             CursorOverride = !CursorOverride;
-            if (CursorOverride)
-            {
-                Cursor.lockState = CursorLockMode.None;
-            }
         }
     }
 
@@ -211,20 +208,28 @@ public class Plugin : BaseUnityPlugin
         GUI.Label(new Rect(15, 40, 120, 20), "Player Name: ");
         GUI.Label(new Rect(15, 60, 120, 20), "Password: ");
 
+        // Disable inputs when connected
+        GUI.enabled = !ArchipelagoClient.Authenticated;
+
         ArchipelagoClient.ServerData.Uri = GUI.TextField(new Rect(135, 20, 170, 20),
             ArchipelagoClient.ServerData.Uri);
         ArchipelagoClient.ServerData.SlotName = GUI.TextField(new Rect(135, 40, 170, 20),
             ArchipelagoClient.ServerData.SlotName);
-        ArchipelagoClient.ServerData.Password = GUI.TextField(new Rect(135, 60, 170, 20),
-            ArchipelagoClient.ServerData.Password);
+        ArchipelagoClient.ServerData.Password = GUI.PasswordField(new Rect(135, 60, 170, 20),
+            ArchipelagoClient.ServerData.Password, '*');
 
         ArchipelagoClient.ServerData.DeathLink = GUI.Toggle(new Rect(15, 80, 150, 20),
             ArchipelagoClient.ServerData.DeathLink, "Death Link");
 
-        if (GUI.Button(new Rect(15, 100, 100, 25), "Connect") &&
+        GUI.enabled = true;
+
+        if (GUI.Button(new Rect(15, 100, 100, 25), ArchipelagoClient.Authenticated ? "Disconnect" : "Connect") &&
             !ArchipelagoClient.ServerData.SlotName.IsNullOrWhiteSpace())
         {
-            ArchipelagoClient.Connect();
+            if (ArchipelagoClient.Authenticated)
+                ArchipelagoClient.Disconnect();
+            else
+                ArchipelagoClient.Connect();
 
             var saveManager = Singleton<ReadWriteSaveManager>.Instance;
             saveManager.SetData("ap_uri", ArchipelagoClient.ServerData.Uri);

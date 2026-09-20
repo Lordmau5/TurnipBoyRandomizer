@@ -7,6 +7,7 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
+using BepInEx;
 using TBCTE_AP.Utils;
 
 namespace TBCTE_AP.Archipelago;
@@ -144,7 +145,7 @@ public class ArchipelagoClient
     /// <summary>
     /// something we wrong or we need to properly disconnect from the server. cleanup and re null our session
     /// </summary>
-    private void Disconnect()
+    public void Disconnect()
     {
         Plugin.BepinLogger.LogDebug("disconnecting from server...");
         session?.Socket.DisconnectAsync();
@@ -263,7 +264,9 @@ public class ArchipelagoClient
     /// <param name="reason"></param>
     private void OnSessionSocketClosed(string reason)
     {
-        Plugin.BepinLogger.LogError($"Connection to Archipelago lost: {reason}");
+        if (!reason.IsNullOrWhiteSpace())
+            Plugin.BepinLogger.LogError($"Connection to Archipelago lost: {reason}");
+
         Disconnect();
     }
 }
